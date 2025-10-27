@@ -1,483 +1,553 @@
 <!DOCTYPE html>
 <html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Aplicación móvil para gestionar compras con conversión de monedas CLP, USD y EUR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="description"
+      content="Aplicación móvil para gestionar compras con conversión de monedas CLP, USD y EUR"
+    />
     <title>🛒 Calculadora de Compras - App Móvil</title>
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
 
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
-            line-height: 1.6;
-            color: #333;
-        }
+      body {
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+          Oxygen, Ubuntu, Cantarell, sans-serif;
+        line-height: 1.6;
+        color: #333;
+      }
 
-        /* Hero Section */
-        .hero {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            padding: 100px 20px;
-            text-align: center;
-            clip-path: polygon(0 0, 100% 0, 100% 85%, 0 100%);
-        }
+      /* Hero Section */
+      .hero {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        padding: 100px 20px;
+        text-align: center;
+        clip-path: polygon(0 0, 100% 0, 100% 85%, 0 100%);
+      }
 
+      .hero h1 {
+        font-size: 3.5rem;
+        margin-bottom: 20px;
+        animation: fadeInDown 1s ease;
+      }
+
+      .hero p {
+        font-size: 1.4rem;
+        margin-bottom: 40px;
+        opacity: 0.95;
+        animation: fadeInUp 1s ease;
+      }
+
+      .badges {
+        display: flex;
+        gap: 10px;
+        justify-content: center;
+        flex-wrap: wrap;
+        margin: 30px 0;
+      }
+
+      .badge {
+        display: inline-block;
+      }
+
+      .cta-buttons {
+        display: flex;
+        gap: 20px;
+        justify-content: center;
+        flex-wrap: wrap;
+        margin-top: 40px;
+      }
+
+      .btn {
+        padding: 15px 40px;
+        border-radius: 50px;
+        text-decoration: none;
+        font-weight: 600;
+        font-size: 1.1rem;
+        transition: all 0.3s ease;
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+      }
+
+      .btn-primary {
+        background: #10b981;
+        color: white;
+        box-shadow: 0 10px 25px rgba(16, 185, 129, 0.4);
+      }
+
+      .btn-primary:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 15px 35px rgba(16, 185, 129, 0.5);
+      }
+
+      .btn-secondary {
+        background: rgba(255, 255, 255, 0.2);
+        color: white;
+        border: 2px solid white;
+        backdrop-filter: blur(10px);
+      }
+
+      .btn-secondary:hover {
+        background: white;
+        color: #667eea;
+      }
+
+      /* Container */
+      .container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 80px 20px;
+      }
+
+      /* Features Section */
+      .section-title {
+        text-align: center;
+        font-size: 2.5rem;
+        margin-bottom: 60px;
+        color: #1f2937;
+      }
+
+      .features {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 40px;
+        margin-bottom: 80px;
+      }
+
+      .feature-card {
+        background: white;
+        padding: 40px;
+        border-radius: 20px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+        text-align: center;
+      }
+
+      .feature-card:hover {
+        transform: translateY(-10px);
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+      }
+
+      .feature-icon {
+        font-size: 4rem;
+        margin-bottom: 20px;
+        display: block;
+      }
+
+      .feature-card h3 {
+        font-size: 1.5rem;
+        margin-bottom: 15px;
+        color: #667eea;
+      }
+
+      .feature-card p {
+        color: #6b7280;
+        line-height: 1.8;
+      }
+
+      /* Screenshots Section */
+      .screenshots {
+        background: #f9fafb;
+        padding: 80px 20px;
+      }
+
+      .screenshot-grid {
+        display: flex;
+        gap: 30px;
+        justify-content: center;
+        flex-wrap: wrap;
+        margin-top: 40px;
+      }
+
+      .screenshot-placeholder {
+        width: 280px;
+        height: 580px;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border-radius: 30px;
+        box-shadow: 0 20px 60px rgba(102, 126, 234, 0.4);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-size: 1.2rem;
+        font-weight: 600;
+        padding: 20px;
+        text-align: center;
+        position: relative;
+        overflow: hidden;
+      }
+
+      .screenshot-placeholder::before {
+        content: "";
+        position: absolute;
+        top: 20px;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 100px;
+        height: 6px;
+        background: rgba(255, 255, 255, 0.3);
+        border-radius: 10px;
+      }
+
+      /* Tech Stack */
+      .tech-stack {
+        text-align: center;
+        padding: 60px 20px;
+      }
+
+      .tech-icons {
+        display: flex;
+        gap: 40px;
+        justify-content: center;
+        flex-wrap: wrap;
+        margin-top: 40px;
+      }
+
+      .tech-item {
+        text-align: center;
+      }
+
+      .tech-item img {
+        width: 80px;
+        height: 80px;
+        margin-bottom: 10px;
+        transition: transform 0.3s ease;
+      }
+
+      .tech-item:hover img {
+        transform: scale(1.1) rotate(5deg);
+      }
+
+      .tech-item p {
+        font-weight: 600;
+        color: #4b5563;
+      }
+
+      /* Installation Section */
+      .installation {
+        background: #1f2937;
+        color: white;
+        padding: 80px 20px;
+      }
+
+      .code-block {
+        background: #111827;
+        padding: 30px;
+        border-radius: 15px;
+        margin: 30px auto;
+        max-width: 800px;
+        font-family: "Courier New", monospace;
+        font-size: 1.1rem;
+        overflow-x: auto;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+      }
+
+      .code-line {
+        color: #10b981;
+        margin: 10px 0;
+      }
+
+      .comment {
+        color: #6b7280;
+      }
+
+      /* Footer */
+      footer {
+        background: #111827;
+        color: white;
+        text-align: center;
+        padding: 40px 20px;
+      }
+
+      .social-links {
+        display: flex;
+        gap: 20px;
+        justify-content: center;
+        margin-top: 20px;
+      }
+
+      .social-links a {
+        color: white;
+        text-decoration: none;
+        font-size: 1.5rem;
+        transition: color 0.3s ease;
+      }
+
+      .social-links a:hover {
+        color: #10b981;
+      }
+
+      /* Animations */
+      @keyframes fadeInDown {
+        from {
+          opacity: 0;
+          transform: translateY(-50px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      @keyframes fadeInUp {
+        from {
+          opacity: 0;
+          transform: translateY(50px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      /* Responsive */
+      @media (max-width: 768px) {
         .hero h1 {
-            font-size: 3.5rem;
-            margin-bottom: 20px;
-            animation: fadeInDown 1s ease;
+          font-size: 2.5rem;
         }
 
         .hero p {
-            font-size: 1.4rem;
-            margin-bottom: 40px;
-            opacity: 0.95;
-            animation: fadeInUp 1s ease;
+          font-size: 1.1rem;
         }
 
-        .badges {
-            display: flex;
-            gap: 10px;
-            justify-content: center;
-            flex-wrap: wrap;
-            margin: 30px 0;
-        }
-
-        .badge {
-            display: inline-block;
-        }
-
-        .cta-buttons {
-            display: flex;
-            gap: 20px;
-            justify-content: center;
-            flex-wrap: wrap;
-            margin-top: 40px;
-        }
-
-        .btn {
-            padding: 15px 40px;
-            border-radius: 50px;
-            text-decoration: none;
-            font-weight: 600;
-            font-size: 1.1rem;
-            transition: all 0.3s ease;
-            display: inline-flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .btn-primary {
-            background: #10b981;
-            color: white;
-            box-shadow: 0 10px 25px rgba(16, 185, 129, 0.4);
-        }
-
-        .btn-primary:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 15px 35px rgba(16, 185, 129, 0.5);
-        }
-
-        .btn-secondary {
-            background: rgba(255, 255, 255, 0.2);
-            color: white;
-            border: 2px solid white;
-            backdrop-filter: blur(10px);
-        }
-
-        .btn-secondary:hover {
-            background: white;
-            color: #667eea;
-        }
-
-        /* Container */
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 80px 20px;
-        }
-
-        /* Features Section */
         .section-title {
-            text-align: center;
-            font-size: 2.5rem;
-            margin-bottom: 60px;
-            color: #1f2937;
+          font-size: 2rem;
         }
 
         .features {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 40px;
-            margin-bottom: 80px;
-        }
-
-        .feature-card {
-            background: white;
-            padding: 40px;
-            border-radius: 20px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
-            text-align: center;
-        }
-
-        .feature-card:hover {
-            transform: translateY(-10px);
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
-        }
-
-        .feature-icon {
-            font-size: 4rem;
-            margin-bottom: 20px;
-            display: block;
-        }
-
-        .feature-card h3 {
-            font-size: 1.5rem;
-            margin-bottom: 15px;
-            color: #667eea;
-        }
-
-        .feature-card p {
-            color: #6b7280;
-            line-height: 1.8;
-        }
-
-        /* Screenshots Section */
-        .screenshots {
-            background: #f9fafb;
-            padding: 80px 20px;
+          grid-template-columns: 1fr;
         }
 
         .screenshot-grid {
-            display: flex;
-            gap: 30px;
-            justify-content: center;
-            flex-wrap: wrap;
-            margin-top: 40px;
+          flex-direction: column;
+          align-items: center;
         }
-
-        .screenshot-placeholder {
-            width: 280px;
-            height: 580px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            border-radius: 30px;
-            box-shadow: 0 20px 60px rgba(102, 126, 234, 0.4);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            font-size: 1.2rem;
-            font-weight: 600;
-            padding: 20px;
-            text-align: center;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .screenshot-placeholder::before {
-            content: '';
-            position: absolute;
-            top: 20px;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 100px;
-            height: 6px;
-            background: rgba(255, 255, 255, 0.3);
-            border-radius: 10px;
-        }
-
-        /* Tech Stack */
-        .tech-stack {
-            text-align: center;
-            padding: 60px 20px;
-        }
-
-        .tech-icons {
-            display: flex;
-            gap: 40px;
-            justify-content: center;
-            flex-wrap: wrap;
-            margin-top: 40px;
-        }
-
-        .tech-item {
-            text-align: center;
-        }
-
-        .tech-item img {
-            width: 80px;
-            height: 80px;
-            margin-bottom: 10px;
-            transition: transform 0.3s ease;
-        }
-
-        .tech-item:hover img {
-            transform: scale(1.1) rotate(5deg);
-        }
-
-        .tech-item p {
-            font-weight: 600;
-            color: #4b5563;
-        }
-
-        /* Installation Section */
-        .installation {
-            background: #1f2937;
-            color: white;
-            padding: 80px 20px;
-        }
-
-        .code-block {
-            background: #111827;
-            padding: 30px;
-            border-radius: 15px;
-            margin: 30px auto;
-            max-width: 800px;
-            font-family: 'Courier New', monospace;
-            font-size: 1.1rem;
-            overflow-x: auto;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
-        }
-
-        .code-line {
-            color: #10b981;
-            margin: 10px 0;
-        }
-
-        .comment {
-            color: #6b7280;
-        }
-
-        /* Footer */
-        footer {
-            background: #111827;
-            color: white;
-            text-align: center;
-            padding: 40px 20px;
-        }
-
-        .social-links {
-            display: flex;
-            gap: 20px;
-            justify-content: center;
-            margin-top: 20px;
-        }
-
-        .social-links a {
-            color: white;
-            text-decoration: none;
-            font-size: 1.5rem;
-            transition: color 0.3s ease;
-        }
-
-        .social-links a:hover {
-            color: #10b981;
-        }
-
-        /* Animations */
-        @keyframes fadeInDown {
-            from {
-                opacity: 0;
-                transform: translateY(-50px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        @keyframes fadeInUp {
-            from {
-                opacity: 0;
-                transform: translateY(50px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        /* Responsive */
-        @media (max-width: 768px) {
-            .hero h1 {
-                font-size: 2.5rem;
-            }
-
-            .hero p {
-                font-size: 1.1rem;
-            }
-
-            .section-title {
-                font-size: 2rem;
-            }
-
-            .features {
-                grid-template-columns: 1fr;
-            }
-
-            .screenshot-grid {
-                flex-direction: column;
-                align-items: center;
-            }
-        }
+      }
     </style>
-</head>
-<body>
+  </head>
+  <body>
     <!-- Hero Section -->
     <section class="hero">
-        <h1>🛒 Calculadora de Compras</h1>
-        <p>Gestiona tus gastos con conversión automática de monedas</p>
-        
-        <div class="badges">
-            <span class="badge">
-                <img src="https://img.shields.io/badge/React%20Native-20232A?style=for-the-badge&logo=react&logoColor=61DAFB" alt="React Native">
-            </span>
-            <span class="badge">
-                <img src="https://img.shields.io/badge/Expo-000020?style=for-the-badge&logo=expo&logoColor=white" alt="Expo">
-            </span>
-            <span class="badge">
-                <img src="https://img.shields.io/badge/TypeScript-007ACC?style=for-the-badge&logo=typescript&logoColor=white" alt="TypeScript">
-            </span>
-        </div>
+      <h1>🛒 Calculadora de Compras</h1>
+      <p>Gestiona tus gastos con conversión automática de monedas</p>
 
-        <div class="cta-buttons">
-            <a href="https://github.com/Raizexs/-compras-calculadora-" class="btn btn-primary">
-                <span>⭐</span> Ver en GitHub
-            </a>
-            <a href="https://github.com/Raizexs/-compras-calculadora-/archive/refs/heads/main.zip" class="btn btn-secondary">
-                <span>📥</span> Descargar Código
-            </a>
-        </div>
+      <div class="badges">
+        <span class="badge">
+          <img
+            src="https://img.shields.io/badge/React%20Native-20232A?style=for-the-badge&logo=react&logoColor=61DAFB"
+            alt="React Native"
+          />
+        </span>
+        <span class="badge">
+          <img
+            src="https://img.shields.io/badge/Expo-000020?style=for-the-badge&logo=expo&logoColor=white"
+            alt="Expo"
+          />
+        </span>
+        <span class="badge">
+          <img
+            src="https://img.shields.io/badge/TypeScript-007ACC?style=for-the-badge&logo=typescript&logoColor=white"
+            alt="TypeScript"
+          />
+        </span>
+      </div>
+
+      <div class="cta-buttons">
+        <a
+          href="https://github.com/Raizexs/-compras-calculadora-"
+          class="btn btn-primary"
+        >
+          <span>⭐</span> Ver en GitHub
+        </a>
+        <a
+          href="https://github.com/Raizexs/-compras-calculadora-/archive/refs/heads/main.zip"
+          class="btn btn-secondary"
+        >
+          <span>📥</span> Descargar Código
+        </a>
+      </div>
     </section>
 
     <!-- Features Section -->
     <div class="container">
-        <h2 class="section-title">✨ Características Principales</h2>
-        <div class="features">
-            <div class="feature-card">
-                <span class="feature-icon">💱</span>
-                <h3>Multi-Moneda</h3>
-                <p>Soporte para CLP (Peso Chileno), USD (Dólar) y EUR (Euro) con conversión automática en tiempo real.</p>
-            </div>
-
-            <div class="feature-card">
-                <span class="feature-icon">💾</span>
-                <h3>Persistencia Local</h3>
-                <p>Tus datos se guardan automáticamente usando AsyncStorage. Nunca pierdas tu lista de compras.</p>
-            </div>
-
-            <div class="feature-card">
-                <span class="feature-icon">🎨</span>
-                <h3>UI Moderna</h3>
-                <p>Interfaz elegante con diseño Material, animaciones suaves y experiencia de usuario optimizada.</p>
-            </div>
-
-            <div class="feature-card">
-                <span class="feature-icon">📊</span>
-                <h3>Cálculo Automático</h3>
-                <p>Total calculado en tiempo real con formato de números según la moneda seleccionada.</p>
-            </div>
-
-            <div class="feature-card">
-                <span class="feature-icon">🗑️</span>
-                <h3>Gestión Fácil</h3>
-                <p>Agrega, elimina (mantén presionado) o limpia toda la lista con un solo toque.</p>
-            </div>
-
-            <div class="feature-card">
-                <span class="feature-icon">📱</span>
-                <h3>Cross-Platform</h3>
-                <p>Funciona perfectamente en Android y iOS con el mismo código base.</p>
-            </div>
+      <h2 class="section-title">✨ Características Principales</h2>
+      <div class="features">
+        <div class="feature-card">
+          <span class="feature-icon">💱</span>
+          <h3>Multi-Moneda</h3>
+          <p>
+            Soporte para CLP (Peso Chileno), USD (Dólar) y EUR (Euro) con
+            conversión automática en tiempo real.
+          </p>
         </div>
+
+        <div class="feature-card">
+          <span class="feature-icon">💾</span>
+          <h3>Persistencia Local</h3>
+          <p>
+            Tus datos se guardan automáticamente usando AsyncStorage. Nunca
+            pierdas tu lista de compras.
+          </p>
+        </div>
+
+        <div class="feature-card">
+          <span class="feature-icon">🎨</span>
+          <h3>UI Moderna</h3>
+          <p>
+            Interfaz elegante con diseño Material, animaciones suaves y
+            experiencia de usuario optimizada.
+          </p>
+        </div>
+
+        <div class="feature-card">
+          <span class="feature-icon">📊</span>
+          <h3>Cálculo Automático</h3>
+          <p>
+            Total calculado en tiempo real con formato de números según la
+            moneda seleccionada.
+          </p>
+        </div>
+
+        <div class="feature-card">
+          <span class="feature-icon">🗑️</span>
+          <h3>Gestión Fácil</h3>
+          <p>
+            Agrega, elimina (mantén presionado) o limpia toda la lista con un
+            solo toque.
+          </p>
+        </div>
+
+        <div class="feature-card">
+          <span class="feature-icon">📱</span>
+          <h3>Cross-Platform</h3>
+          <p>
+            Funciona perfectamente en Android y iOS con el mismo código base.
+          </p>
+        </div>
+      </div>
     </div>
 
     <!-- Screenshots Section -->
     <section class="screenshots">
-        <div class="container">
-            <h2 class="section-title">📱 Vista Previa de la App</h2>
-            <div class="screenshot-grid">
-                <div class="screenshot-placeholder">
-                    🛒<br>Pantalla<br>Principal
-                </div>
-                <div class="screenshot-placeholder">
-                    💱<br>Conversión<br>de Monedas
-                </div>
-                <div class="screenshot-placeholder">
-                    📊<br>Lista de<br>Productos
-                </div>
-            </div>
-            <p style="text-align: center; margin-top: 30px; color: #6b7280;">
-                <em>Nota: Agrega tus propias capturas de pantalla reemplazando estos placeholders</em>
-            </p>
+      <div class="container">
+        <h2 class="section-title">📱 Vista Previa de la App</h2>
+        <div class="screenshot-grid">
+          <div class="screenshot-placeholder">
+            🛒<br />Pantalla<br />Principal
+          </div>
+          <div class="screenshot-placeholder">
+            💱<br />Conversión<br />de Monedas
+          </div>
+          <div class="screenshot-placeholder">
+            📊<br />Lista de<br />Productos
+          </div>
         </div>
+        <p style="text-align: center; margin-top: 30px; color: #6b7280">
+          <em
+            >Nota: Agrega tus propias capturas de pantalla reemplazando estos
+            placeholders</em
+          >
+        </p>
+      </div>
     </section>
 
     <!-- Tech Stack -->
     <section class="tech-stack">
-        <div class="container">
-            <h2 class="section-title">🛠️ Tecnologías Utilizadas</h2>
-            <div class="tech-icons">
-                <div class="tech-item">
-                    <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/react/react-original.svg" alt="React">
-                    <p>React Native</p>
-                </div>
-                <div class="tech-item">
-                    <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/typescript/typescript-original.svg" alt="TypeScript">
-                    <p>TypeScript</p>
-                </div>
-                <div class="tech-item">
-                    <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/javascript/javascript-original.svg" alt="JavaScript">
-                    <p>JavaScript</p>
-                </div>
-                <div class="tech-item">
-                    <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/nodejs/nodejs-original.svg" alt="Node.js">
-                    <p>Node.js</p>
-                </div>
-            </div>
+      <div class="container">
+        <h2 class="section-title">🛠️ Tecnologías Utilizadas</h2>
+        <div class="tech-icons">
+          <div class="tech-item">
+            <img
+              src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/react/react-original.svg"
+              alt="React"
+            />
+            <p>React Native</p>
+          </div>
+          <div class="tech-item">
+            <img
+              src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/typescript/typescript-original.svg"
+              alt="TypeScript"
+            />
+            <p>TypeScript</p>
+          </div>
+          <div class="tech-item">
+            <img
+              src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/javascript/javascript-original.svg"
+              alt="JavaScript"
+            />
+            <p>JavaScript</p>
+          </div>
+          <div class="tech-item">
+            <img
+              src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/nodejs/nodejs-original.svg"
+              alt="Node.js"
+            />
+            <p>Node.js</p>
+          </div>
         </div>
+      </div>
     </section>
 
     <!-- Installation Section -->
     <section class="installation">
-        <div class="container">
-            <h2 class="section-title" style="color: white;">🚀 Instalación Rápida</h2>
-            <div class="code-block">
-                <div class="code-line"><span class="comment"># 1. Clonar el repositorio</span></div>
-                <div class="code-line">git clone https://github.com/Raizexs/-compras-calculadora-.git</div>
-                <div class="code-line">cd compras-calculadora</div>
-                <br>
-                <div class="code-line"><span class="comment"># 2. Instalar dependencias</span></div>
-                <div class="code-line">npm install</div>
-                <br>
-                <div class="code-line"><span class="comment"># 3. Iniciar el proyecto</span></div>
-                <div class="code-line">npx expo start</div>
-                <br>
-                <div class="code-line"><span class="comment"># 4. Escanear QR con Expo Go</span></div>
-                <div class="code-line">📱 Descarga Expo Go desde tu tienda de apps</div>
-            </div>
+      <div class="container">
+        <h2 class="section-title" style="color: white">
+          🚀 Instalación Rápida
+        </h2>
+        <div class="code-block">
+          <div class="code-line">
+            <span class="comment"># 1. Clonar el repositorio</span>
+          </div>
+          <div class="code-line">
+            git clone https://github.com/Raizexs/-compras-calculadora-.git
+          </div>
+          <div class="code-line">cd compras-calculadora</div>
+          <br />
+          <div class="code-line">
+            <span class="comment"># 2. Instalar dependencias</span>
+          </div>
+          <div class="code-line">npm install</div>
+          <br />
+          <div class="code-line">
+            <span class="comment"># 3. Iniciar el proyecto</span>
+          </div>
+          <div class="code-line">npx expo start</div>
+          <br />
+          <div class="code-line">
+            <span class="comment"># 4. Escanear QR con Expo Go</span>
+          </div>
+          <div class="code-line">
+            📱 Descarga Expo Go desde tu tienda de apps
+          </div>
         </div>
+      </div>
     </section>
 
     <!-- Footer -->
     <footer>
-        <p>&copy; 2025 Calculadora de Compras. Desarrollado con ❤️ por <strong>Ryzek</strong></p>
-        <div class="social-links">
-            <a href="https://github.com/Raizexs" target="_blank" title="GitHub">
-                <svg width="24" height="24" fill="currentColor" viewBox="0 0 24 24">
-                    <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
-                </svg>
-            </a>
-        </div>
-        <p style="margin-top: 20px; font-size: 0.9rem; color: #6b7280;">
-            Licencia MIT | Open Source
-        </p>
+      <p>
+        &copy; 2025 Calculadora de Compras. Desarrollado con ❤️ por
+        <strong>Ryzek</strong>
+      </p>
+      <div class="social-links">
+        <a href="https://github.com/Raizexs" target="_blank" title="GitHub">
+          <svg width="24" height="24" fill="currentColor" viewBox="0 0 24 24">
+            <path
+              d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"
+            />
+          </svg>
+        </a>
+      </div>
+      <p style="margin-top: 20px; font-size: 0.9rem; color: #6b7280">
+        Licencia MIT | Open Source
+      </p>
     </footer>
-</body>
+  </body>
 </html>

@@ -10,6 +10,12 @@ Una aplicación móvil moderna y elegante para gestionar y calcular tus compras 
 ![GitHub Stars](https://img.shields.io/github/stars/Raizexs/-compras-calculadora-?style=social)
 ![GitHub Forks](https://img.shields.io/github/forks/Raizexs/-compras-calculadora-?style=social)
 
+## 🌐 Demo Online
+
+🔗 **[Ver Landing Page →](https://raizexs.github.io/-compras-calculadora-/)**
+
+Una vez actives GitHub Pages (ver `GITHUB_PAGES_SETUP.md`), tu landing page estará disponible públicamente.
+
 ## ✨ Características
 
 ### 💱 Conversión de Monedas
