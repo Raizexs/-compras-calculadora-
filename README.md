@@ -9,16 +9,19 @@ Una aplicación móvil moderna y elegante para gestionar y calcular tus compras 
 ## ✨ Características
 
 ### 💱 Conversión de Monedas
+
 - Soporte para **CLP** (Peso Chileno), **USD** (Dólar Estadounidense) y **EUR** (Euro)
 - Conversión automática entre monedas con tasas de cambio configurables
 - Visualización inteligente: muestra conversión a CLP cuando seleccionas esa moneda
 
 ### 💾 Persistencia de Datos
+
 - Almacenamiento local con AsyncStorage
 - Guarda automáticamente tu lista de productos
 - Recupera tus datos al abrir la aplicación
 
 ### 🎨 Interfaz Moderna
+
 - Diseño limpio y profesional
 - Cards con sombras y bordes redondeados
 - Paleta de colores cuidadosamente seleccionada
@@ -26,6 +29,7 @@ Una aplicación móvil moderna y elegante para gestionar y calcular tus compras 
 - Estados visuales claros (habilitado/deshabilitado)
 
 ### 📊 Funcionalidades
+
 - ➕ Agregar productos con nombre y precio
 - 🗑️ Eliminar productos (mantener presionado)
 - 🧹 Limpiar toda la lista con un botón
@@ -68,22 +72,26 @@ Una aplicación móvil moderna y elegante para gestionar y calcular tus compras 
 ### Instalación
 
 1. **Clona el repositorio**
+
 ```bash
 git clone https://github.com/TU_USUARIO/compras-calculadora.git
 cd compras-calculadora
 ```
 
 2. **Instala las dependencias**
+
 ```bash
 npm install
 ```
 
 3. **Instala las dependencias específicas**
+
 ```bash
 npx expo install @react-native-async-storage/async-storage @react-native-picker/picker
 ```
 
 4. **Inicia el proyecto**
+
 ```bash
 npx expo start
 ```
@@ -126,18 +134,22 @@ compras-calculadora/
 ## 💡 Uso
 
 ### Agregar un Producto
+
 1. Selecciona la moneda deseada (CLP, USD, EUR)
 2. Escribe el nombre del producto
 3. Ingresa el precio
 4. Presiona "➕ Agregar Producto"
 
 ### Eliminar un Producto
+
 - Mantén presionado el producto que deseas eliminar
 
 ### Limpiar Lista
+
 - Presiona el botón "🗑️ Limpiar" en la parte superior
 
 ### Cambiar Moneda
+
 - Selecciona una moneda diferente del desplegable
 - Los precios se convertirán automáticamente
 
@@ -149,8 +161,8 @@ Puedes modificar las tasas de cambio en `app/(tabs)/index.tsx`:
 
 ```typescript
 const EXCHANGE_RATES = {
-  USD_TO_CLP: 950,    // 1 USD = 950 CLP
-  EUR_TO_CLP: 1050,   // 1 EUR = 1050 CLP
+  USD_TO_CLP: 950, // 1 USD = 950 CLP
+  EUR_TO_CLP: 1050, // 1 EUR = 1050 CLP
 };
 ```
 
@@ -202,6 +214,7 @@ Este proyecto está bajo la Licencia MIT. Ver el archivo `LICENSE` para más det
 ## 👤 Autor
 
 **Ryzek**
+
 - GitHub: [@Ryzek](https://github.com/Ryzek)
 
 ## 🙏 Agradecimientos
@@ -213,7 +226,3 @@ Este proyecto está bajo la Licencia MIT. Ver el archivo `LICENSE` para más det
 ---
 
 ⭐️ Si este proyecto te fue útil, considera darle una estrella en GitHub!
-
-## 📞 Soporte
-
-¿Tienes preguntas o sugerencias? Abre un [issue](https://github.com/Ryzek/compras-calculadora/issues) en GitHub.
