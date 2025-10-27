@@ -1,43 +1,258 @@
-# Learn more https://docs.github.com/en/get-started/getting-started-with-git/ignoring-files
+# ====================================
+# React Native / Expo Project
+# ====================================
 
-# dependencies
+# Dependencies
 node_modules/
+.pnp
+.pnp.js
+npm-debug.*
+yarn-debug.*
+yarn-error.*
+lerna-debug.log*
+.yarn/*
+!.yarn/patches
+!.yarn/plugins
+!.yarn/releases
+!.yarn/versions
 
 # Expo
 .expo/
+.expo-shared/
 dist/
 web-build/
 expo-env.d.ts
 
-# Native
+# Native builds
 .kotlin/
 *.orig.*
 *.jks
 *.p8
 *.p12
 *.key
+*.keystore
 *.mobileprovision
+*.hprof
 
-# Metro
+# Generated native folders
+/ios
+/android
+
+# Metro bundler
 .metro-health-check*
+.metro-cache/
 
-# debug
-npm-debug.*
-yarn-debug.*
-yarn-error.*
+# Testing
+coverage/
+*.lcov
+.nyc_output
+junit.xml
+
+# ====================================
+# Environment & Secrets (SEGURIDAD)
+# ====================================
+
+# Variables de entorno - NUNCA subir
+.env
+.env.*
+!.env.example
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+.env.staging
+.env.production
+
+# Configuración sensible
+config/secrets.js
+config/keys.js
+config/credentials.json
+secrets.json
+credentials.json
+
+# API Keys y Tokens
+**/api-keys.json
+**/firebase-config.json
+**/google-services.json
+**/GoogleService-Info.plist
+
+# Certificados y llaves privadas
+*.pem
+*.cert
+*.crt
+*.p12
+*.pfx
+private-key*.json
+
+# ====================================
+# IDEs y Editores
+# ====================================
+
+# VS Code
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+*.code-workspace
+
+# JetBrains (WebStorm, IntelliJ)
+.idea/
+*.iml
+*.iws
+*.ipr
+out/
+
+# Sublime Text
+*.sublime-workspace
+*.sublime-project
+
+# Vim
+*.swp
+*.swo
+*~
+
+# ====================================
+# Sistema Operativo
+# ====================================
 
 # macOS
 .DS_Store
-*.pem
+.AppleDouble
+.LSOverride
+._*
+.DocumentRevisions-V100
+.fseventsd
+.Spotlight-V100
+.TemporaryItems
+.Trashes
+.VolumeIcon.icns
+.com.apple.timemachine.donotpresent
 
-# local env files
-.env*.local
+# Windows
+Thumbs.db
+Thumbs.db:encryptable
+ehthumbs.db
+ehthumbs_vista.db
+*.stackdump
+[Dd]esktop.ini
+$RECYCLE.BIN/
+*.lnk
 
-# typescript
+# Linux
+*~
+.fuse_hidden*
+.directory
+.Trash-*
+.nfs*
+
+# ====================================
+# Logs y Debug
+# ====================================
+
+logs/
+*.log
+pids
+*.pid
+*.seed
+*.pid.lock
+lib-cov
+
+# ====================================
+# Build y Distribución
+# ====================================
+
+# TypeScript
 *.tsbuildinfo
+*.tsbuildinfo.*
 
-app-example
+# Build folders
+build/
+dist/
+tmp/
+temp/
+out/
 
-# generated native folders
-/ios
-/android
+# App específico
+app-example/
+
+# EAS Build
+eas-build-pre-install.sh
+eas-build-post-install.sh
+
+# ====================================
+# Otros
+# ====================================
+
+# Archives
+*.tar
+*.zip
+*.7z
+*.dmg
+*.gz
+*.iso
+*.jar
+*.rar
+*.tar
+*.war
+*.tgz
+
+# Backup files
+*.bak
+*.backup
+*.old
+*.orig
+
+# Cache
+.cache/
+*.cache
+.parcel-cache/
+
+# Optional npm cache directory
+.npm
+
+# Optional eslint cache
+.eslintcache
+
+# Optional stylelint cache
+.stylelintcache
+
+# Microbundle cache
+.rpt2_cache/
+.rts2_cache_cjs/
+.rts2_cache_es/
+.rts2_cache_umd/
+
+# Optional REPL history
+.node_repl_history
+
+# Yarn Integrity file
+.yarn-integrity
+
+# Next.js
+.next/
+
+# Gatsby
+.cache/
+public/
+
+# Serverless
+.serverless/
+
+# FuseBox
+.fusebox/
+
+# DynamoDB Local
+.dynamodb/
+
+# TernJS
+.tern-port
+
+# Stores VSCode versions used for testing VSCode extensions
+.vscode-test
+
+# yarn v2
+.yarn/cache
+.yarn/unplugged
+.yarn/build-state.yml
+.yarn/install-state.gz
