@@ -6,6 +6,10 @@ Una aplicación móvil moderna y elegante para gestionar y calcular tus compras 
 ![Expo](https://img.shields.io/badge/Expo-000020?style=for-the-badge&logo=expo&logoColor=white)
 ![TypeScript](https://img.shields.io/badge/TypeScript-007ACC?style=for-the-badge&logo=typescript&logoColor=white)
 
+![CI Status](https://github.com/Raizexs/-compras-calculadora-/actions/workflows/ci.yml/badge.svg)
+![GitHub Stars](https://img.shields.io/github/stars/Raizexs/-compras-calculadora-?style=social)
+![GitHub Forks](https://img.shields.io/github/forks/Raizexs/-compras-calculadora-?style=social)
+
 ## ✨ Características
 
 ### 💱 Conversión de Monedas
