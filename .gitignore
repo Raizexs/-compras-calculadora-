@@ -1,8 +1,19 @@
 # ====================================
-# React Native / Expo Project
+# IDEs y Editores
+# ====================================
+
+# VS Code
+.vscode/
+
+# GitHub
+.github/
+
+# ====================================
+# React Native / Expo Project (Frontend)
 # ====================================
 
 # Dependencies
+frontend/node_modules/
 node_modules/
 .pnp
 .pnp.js
@@ -17,12 +28,98 @@ lerna-debug.log*
 !.yarn/versions
 
 # Expo
+frontend/.expo/
 .expo/
 .expo-shared/
 dist/
 web-build/
 expo-env.d.ts
 
+# ====================================
+# Python Backend
+# ====================================
+
+# Virtual Environment
+backend/venv/
+backend/env/
+backend/.venv/
+venv/
+env/
+ENV/
+
+# Python
+*.py[cod]
+*$py.class
+*.so
+__pycache__/
+*.egg
+*.egg-info/
+dist/
+build/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.manifest
+*.spec
+
+# PyInstaller
+*.manifest
+*.spec
+
+# Installer logs
+pip-log.txt
+pip-delete-this-directory.txt
+
+# Unit test / coverage reports
+htmlcov/
+.tox/
+.nox/
+.coverage
+.coverage.*
+.cache
+nosetests.xml
+coverage.xml
+*.cover
+.hypothesis/
+.pytest_cache/
+
+# Jupyter Notebook
+.ipynb_checkpoints
+
+# pyenv
+.python-version
+
+# Celery
+celerybeat-schedule
+celerybeat.pid
+
+# SageMath parsed files
+*.sage.py
+
+# Spyder project settings
+.spyderproject
+.spyproject
+
+# Rope project settings
+.ropeproject
+
+# mkdocs documentation
+/site
+
+# mypy
+.mypy_cache/
+.dmypy.json
+dmypy.json
+
+# Pyre type checker
+.pyre/
+
+# ====================================
 # Native builds
 .kotlin/
 *.orig.*
@@ -56,6 +153,12 @@ junit.xml
 .env
 .env.*
 !.env.example
+backend/.env
+backend/.env.*
+!backend/.env.example
+frontend/.env
+frontend/.env.*
+!frontend/.env.example
 .env.local
 .env.development.local
 .env.test.local
