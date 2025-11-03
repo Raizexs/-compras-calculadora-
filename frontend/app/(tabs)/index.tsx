@@ -167,6 +167,10 @@ export default function ComprasScreen() {
   };
 
   const clearCart = () => {
+    if (cartItems.length === 0) {
+      return;
+    }
+
     Alert.alert(
       "Limpiar carrito",
       "¿Estás seguro de que deseas vaciar el carrito?",
@@ -178,6 +182,10 @@ export default function ComprasScreen() {
           onPress: () => {
             setCartItems([]);
             AsyncStorage.removeItem(STORAGE_KEYS.CART);
+            Alert.alert(
+              "Carrito limpiado",
+              "El carrito ha sido vaciado exitosamente."
+            );
           },
         },
       ]
@@ -313,37 +321,6 @@ export default function ComprasScreen() {
               </Picker>
             </View>
 
-            <View style={styles.quantityContainer}>
-              <Text style={styles.quantityLabel}>Cantidad</Text>
-              <View style={styles.quantityControls}>
-                <Pressable
-                  style={({ pressed }) => [
-                    styles.quantityButton,
-                    pressed && styles.quantityButtonPressed,
-                  ]}
-                  onPress={() => {
-                    const num = parseInt(quantity) || 1;
-                    if (num > 1) setQuantity(String(num - 1));
-                  }}
-                >
-                  <Ionicons name="remove" size={20} color="#fff" />
-                </Pressable>
-                <Text style={styles.quantityDisplay}>{quantity}</Text>
-                <Pressable
-                  style={({ pressed }) => [
-                    styles.quantityButton,
-                    pressed && styles.quantityButtonPressed,
-                  ]}
-                  onPress={() => {
-                    const num = parseInt(quantity) || 1;
-                    setQuantity(String(num + 1));
-                  }}
-                >
-                  <Ionicons name="add" size={20} color="#fff" />
-                </Pressable>
-              </View>
-            </View>
-
             <Pressable
               style={({ pressed }) => [
                 styles.addButton,
@@ -359,18 +336,19 @@ export default function ComprasScreen() {
           {/* Cart */}
           <View style={styles.card}>
             <View style={styles.cardHeader}>
-              <Ionicons name="basket" size={24} color="#6366f1" />
-              <Text style={styles.sectionTitle}>
-                Mi Carrito ({getTotalItems()})
-              </Text>
+              <View style={styles.cartHeaderLeft}>
+                <Ionicons name="basket" size={24} color="#6366f1" />
+                <Text style={styles.sectionTitle}>
+                  Mi Carrito ({getTotalItems()})
+                </Text>
+              </View>
+              {cartItems.length > 0 && (
+                <Pressable style={styles.clearButton} onPress={clearCart}>
+                  <Ionicons name="trash-outline" size={18} color="#ef4444" />
+                  <Text style={styles.clearText}>Limpiar</Text>
+                </Pressable>
+              )}
             </View>
-
-            {cartItems.length > 0 && (
-              <Pressable style={styles.clearButton} onPress={clearCart}>
-                <Ionicons name="trash-outline" size={18} color="#ef4444" />
-                <Text style={styles.clearText}>Limpiar</Text>
-              </Pressable>
-            )}
 
             {cartItems.length === 0 ? (
               <View style={styles.emptyCart}>
@@ -400,7 +378,7 @@ export default function ComprasScreen() {
                       </Text>
                     </View>
 
-                    <View style={styles.cartQuantityControls}>
+                    <View style={styles.itemRight}>
                       <Pressable
                         style={({ pressed }) => [
                           styles.cartQuantityButton,
@@ -408,7 +386,7 @@ export default function ComprasScreen() {
                         ]}
                         onPress={() => updateQuantity(item.id, -1)}
                       >
-                        <Ionicons name="remove" size={18} color="#6366f1" />
+                        <Ionicons name="remove" size={20} color="#6366f1" />
                       </Pressable>
 
                       <Text style={styles.quantityText}>{item.quantity}</Text>
@@ -420,11 +398,11 @@ export default function ComprasScreen() {
                         ]}
                         onPress={() => updateQuantity(item.id, 1)}
                       >
-                        <Ionicons name="add" size={18} color="#6366f1" />
+                        <Ionicons name="add" size={20} color="#6366f1" />
                       </Pressable>
                     </View>
 
-                    <View style={styles.itemRight}>
+                    <View style={styles.itemTotalContainer}>
                       <Text style={styles.itemTotal}>
                         {getCurrencySymbol()}{" "}
                         {formatPrice(item.product.price * item.quantity)}
@@ -598,7 +576,12 @@ const styles = StyleSheet.create({
   cardHeader: {
     flexDirection: "row",
     alignItems: "center",
+    justifyContent: "space-between",
     marginBottom: 20,
+  },
+  cartHeaderLeft: {
+    flexDirection: "row",
+    alignItems: "center",
     gap: 12,
   },
   sectionTitle: {
@@ -712,9 +695,6 @@ const styles = StyleSheet.create({
   },
   // Clear Button
   clearButton: {
-    position: "absolute",
-    top: 24,
-    right: 24,
     flexDirection: "row",
     alignItems: "center",
     gap: 6,
@@ -769,58 +749,58 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   productName: {
-    fontSize: 16,
-    fontWeight: "600",
+    fontSize: 18,
+    fontWeight: "700",
     color: "#1e293b",
-    marginBottom: 4,
-    letterSpacing: -0.2,
+    marginBottom: 6,
+    letterSpacing: -0.3,
   },
   productPrice: {
-    fontSize: 16,
+    fontSize: 17,
     fontFamily: "Courier New",
     color: "#6366f1",
+    fontWeight: "600",
   },
   priceUnit: {
-    fontSize: 13,
+    fontSize: 14,
     color: "#94a3b8",
     fontFamily: "Courier New",
   },
   // Quantity Controls (Cart Items)
-  cartQuantityControls: {
+  itemRight: {
     flexDirection: "row",
     alignItems: "center",
     gap: 12,
-    backgroundColor: "#f8fafc",
-    borderRadius: 12,
-    padding: 6,
   },
   cartQuantityButton: {
-    width: 36,
-    height: 36,
-    borderRadius: 10,
-    backgroundColor: "#fff",
+    width: 40,
+    height: 40,
+    borderRadius: 12,
+    backgroundColor: "#eef2ff",
     justifyContent: "center",
     alignItems: "center",
-    boxShadow: "0px 2px 8px rgba(0, 0, 0, 0.06)",
+    borderWidth: 1,
+    borderColor: "#c7d2fe",
   },
   cartQuantityButtonPressed: {
-    backgroundColor: "#f1f5f9",
+    backgroundColor: "#ddd6fe",
     transform: [{ scale: 0.95 }],
   },
   quantityText: {
-    fontSize: 16,
+    fontSize: 18,
     fontWeight: "700",
     fontFamily: "Courier New",
     color: "#1e293b",
-    minWidth: 28,
+    minWidth: 32,
     textAlign: "center",
   },
-  itemRight: {
+  itemTotalContainer: {
     alignItems: "flex-end",
     gap: 8,
+    marginLeft: 12,
   },
   itemTotal: {
-    fontSize: 18,
+    fontSize: 20,
     fontWeight: "700",
     fontFamily: "Courier New",
     color: "#10b981",

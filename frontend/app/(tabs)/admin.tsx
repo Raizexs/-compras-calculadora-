@@ -14,6 +14,7 @@ import {
   View,
 } from "react-native";
 import { Product, productsAPI, User } from "../../src/services/api";
+import { getProductEmoji } from "../../src/utils/productIcons";
 
 const STORAGE_KEYS = {
   USER: "@user_data",
@@ -84,9 +85,16 @@ export default function AdminScreen() {
 
     setLoading(true);
     try {
-      await productsAPI.create(productName.trim(), price);
+      // Agregar emoji automáticamente al nombre del producto
+      const emoji = getProductEmoji(productName.trim());
+      const productNameWithEmoji = `${emoji} ${productName.trim()}`;
 
-      Alert.alert("Éxito", `Producto "${productName}" agregado correctamente`);
+      await productsAPI.create(productNameWithEmoji, price);
+
+      Alert.alert(
+        "Éxito",
+        `Producto "${productNameWithEmoji}" agregado correctamente`
+      );
       setProductName("");
       setProductPrice("");
       setShowAddForm(false);
@@ -181,6 +189,19 @@ export default function AdminScreen() {
               <Text style={styles.formTitle}>Nuevo Producto</Text>
             </View>
 
+            {/* Vista previa del emoji */}
+            {productName.trim() && (
+              <View style={styles.emojiPreview}>
+                <Text style={styles.emojiPreviewIcon}>
+                  {getProductEmoji(productName.trim())}
+                </Text>
+                <Text style={styles.emojiPreviewText}>
+                  Vista previa: {getProductEmoji(productName.trim())}{" "}
+                  {productName.trim()}
+                </Text>
+              </View>
+            )}
+
             <View style={styles.inputWrapper}>
               <Ionicons
                 name="pricetag"
@@ -189,7 +210,7 @@ export default function AdminScreen() {
                 style={styles.inputIcon}
               />
               <TextInput
-                placeholder="Nombre del producto"
+                placeholder="Nombre del producto (ej: Leche, Pan, Huevos)"
                 value={productName}
                 onChangeText={setProductName}
                 style={styles.input}
@@ -311,7 +332,8 @@ export default function AdminScreen() {
           </View>
           <Text style={styles.infoText}>
             Los productos agregados aparecerán inmediatamente en el catálogo
-            para todos los usuarios.
+            para todos los usuarios. El emoji se asigna automáticamente según el
+            nombre del producto.
           </Text>
           <View style={styles.statsContainer}>
             <View style={styles.statItem}>
@@ -468,6 +490,25 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: "700",
     color: "#1e293b",
+  },
+  emojiPreview: {
+    backgroundColor: "#f8fafc",
+    borderRadius: 12,
+    padding: 16,
+    marginBottom: 16,
+    borderWidth: 2,
+    borderColor: "#e2e8f0",
+    alignItems: "center",
+  },
+  emojiPreviewIcon: {
+    fontSize: 48,
+    marginBottom: 8,
+  },
+  emojiPreviewText: {
+    fontSize: 16,
+    fontWeight: "600",
+    color: "#475569",
+    textAlign: "center",
   },
   inputWrapper: {
     position: "relative",
