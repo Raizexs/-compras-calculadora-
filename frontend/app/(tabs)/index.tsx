@@ -2,7 +2,7 @@ import { Ionicons } from "@expo/vector-icons";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { Picker } from "@react-native-picker/picker";
 import { useRouter } from "expo-router";
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import {
   ActivityIndicator,
   Alert,
@@ -182,10 +182,6 @@ export default function ComprasScreen() {
           onPress: () => {
             setCartItems([]);
             AsyncStorage.removeItem(STORAGE_KEYS.CART);
-            Alert.alert(
-              "Carrito limpiado",
-              "El carrito ha sido vaciado exitosamente."
-            );
           },
         },
       ]
@@ -292,8 +288,10 @@ export default function ComprasScreen() {
           {/* Product Selection Card */}
           <View style={styles.card}>
             <View style={styles.cardHeader}>
-              <Ionicons name="bag-add" size={24} color="#6366f1" />
-              <Text style={styles.sectionTitle}>Agregar Producto</Text>
+              <View style={styles.cartHeaderLeft}>
+                <Ionicons name="bag-add" size={24} color="#6366f1" />
+                <Text style={styles.sectionTitle}>Agregar Producto</Text>
+              </View>
             </View>
 
             <View style={styles.pickerWrapper}>
