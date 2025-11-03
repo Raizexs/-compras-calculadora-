@@ -1,38 +1,175 @@
+import { Ionicons } from "@expo/vector-icons";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import React, { useEffect, useState } from "react";
+import { useRouter } from "expo-router";
+import React, { useEffect, useRef, useState } from "react";
 import {
   ActivityIndicator,
   Alert,
-  FlatList,
+  Animated,
+  Modal,
   Pressable,
-  RefreshControl,
   SafeAreaView,
+  ScrollView,
   StyleSheet,
   Text,
+  TextInput,
   View,
 } from "react-native";
-import {
-  Person,
-  Product,
-  productsAPI,
-  PurchaseItem,
-  purchasesAPI,
-} from "../../src/services/api";
+import { useCurrency } from "../../src/context/CurrencyContext";
+import { Person, Product, productsAPI } from "../../src/services/api";
+import { getProductColor, getProductEmoji } from "../../src/utils/productIcons";
 
 const STORAGE_KEYS = {
   PERSON: "@person_data",
   CART: "@cart_data",
 };
 
-export default function HomeScreen() {
+// Componente separado para cada producto
+const ProductCard = ({ item, index }: { item: Product; index: number }) => {
+  const { formatPrice, getCurrencySymbol } = useCurrency();
+
+  // Generar descripción completa basada en el producto
+  const getProductDescription = (name: string): string => {
+    const descriptions: { [key: string]: string } = {
+      Leche: "Leche fresca entera - 1 Litro",
+      Pan: "Pan fresco del día - Unidad",
+      Huevos: "Huevos frescos - Docena",
+      Arroz: "Arroz grano largo - 1 Kilo",
+      Aceite: "Aceite vegetal - 1 Litro",
+      Azúcar: "Azúcar blanca - 1 Kilo",
+      Sal: "Sal de mesa - 1 Kilo",
+      Café: "Café molido - 250g",
+      Té: "Té surtido - Caja x20",
+      Jugo: "Jugo natural - 1 Litro",
+      Agua: "Agua mineral - 1.5L",
+      Pollo: "Pollo fresco - 1 Kilo",
+      Carne: "Carne molida - 1 Kilo",
+      Pescado: "Pescado fresco - 1 Kilo",
+      Yogurt: "Yogurt natural - 150ml",
+      Queso: "Queso fresco - 250g",
+      Tomate: "Tomate fresco - 1 Kilo",
+      Plátano: "Plátanos maduros - 1 Kilo",
+    };
+
+    // Buscar descripción completa
+    for (const [key, desc] of Object.entries(descriptions)) {
+      if (name.includes(key)) {
+        return desc;
+      }
+    }
+
+    // Si no encuentra, crear descripción genérica
+    return `${name} - Unidad`;
+  };
+
+  return (
+    <View
+      style={[
+        styles.productCard,
+        {
+          backgroundColor: getProductColor(item.name),
+        },
+      ]}
+    >
+      <View style={styles.productEmojiContainer}>
+        <Text style={styles.productEmoji}>{getProductEmoji(item.name)}</Text>
+      </View>
+
+      <View style={styles.productInfo}>
+        <Text style={styles.productName} numberOfLines={1}>
+          {item.name}
+        </Text>
+        <Text style={styles.productDescription} numberOfLines={2}>
+          {getProductDescription(item.name)}
+        </Text>
+        <View style={styles.priceTag}>
+          <Ionicons name="pricetag" size={14} color="#6366f1" />
+          <Text style={styles.productPrice}>
+            {getCurrencySymbol()} {formatPrice(item.price)}
+          </Text>
+        </View>
+      </View>
+    </View>
+  );
+};
+
+export default function CatalogoScreen() {
+  const router = useRouter();
+  const { formatPrice, getCurrencySymbol } = useCurrency();
   const [products, setProducts] = useState<Product[]>([]);
+  const [filteredProducts, setFilteredProducts] = useState<Product[]>([]);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [selectedCategory, setSelectedCategory] = useState("Todos");
   const [cart, setCart] = useState<{ [key: string]: number }>({});
   const [person, setPerson] = useState<Person | null>(null);
   const [loading, setLoading] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
+  const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
+  const [showDetailModal, setShowDetailModal] = useState(false);
+  const fadeAnim = useRef(new Animated.Value(0)).current;
+  const slideAnim = useRef(new Animated.Value(30)).current;
+
+  const categories = [
+    "Todos",
+    "Lácteos",
+    "Panadería",
+    "Frutas",
+    "Granos",
+    "Verduras",
+    "Aceites",
+    "Carnes",
+  ];
+
+  const getCategoryForProduct = (productName: string): string => {
+    const name = productName.toLowerCase();
+    if (
+      name.includes("leche") ||
+      name.includes("yogurt") ||
+      name.includes("queso") ||
+      name.includes("huevos")
+    )
+      return "Lácteos";
+    if (name.includes("pan") || name.includes("pasta")) return "Panadería";
+    if (
+      name.includes("manzana") ||
+      name.includes("plátano") ||
+      name.includes("banana")
+    )
+      return "Frutas";
+    if (name.includes("arroz") || name.includes("café") || name.includes("té"))
+      return "Granos";
+    if (
+      name.includes("tomate") ||
+      name.includes("lechuga") ||
+      name.includes("cebolla")
+    )
+      return "Verduras";
+    if (name.includes("aceite") || name.includes("mantequilla"))
+      return "Aceites";
+    if (
+      name.includes("pollo") ||
+      name.includes("carne") ||
+      name.includes("pescado")
+    )
+      return "Carnes";
+    return "Otros";
+  };
 
   useEffect(() => {
     loadInitialData();
+    // Animación de entrada
+    Animated.parallel([
+      Animated.timing(fadeAnim, {
+        toValue: 1,
+        duration: 500,
+        useNativeDriver: false,
+      }),
+      Animated.timing(slideAnim, {
+        toValue: 0,
+        duration: 400,
+        useNativeDriver: false,
+      }),
+    ]).start();
   }, []);
 
   useEffect(() => {
@@ -41,6 +178,30 @@ export default function HomeScreen() {
       () => {}
     );
   }, [cart]);
+
+  useEffect(() => {
+    filterProducts();
+  }, [products, searchQuery, selectedCategory]);
+
+  const filterProducts = () => {
+    let filtered = [...products];
+
+    // Filter by search query
+    if (searchQuery.trim()) {
+      filtered = filtered.filter((product) =>
+        product.name.toLowerCase().includes(searchQuery.toLowerCase())
+      );
+    }
+
+    // Filter by category
+    if (selectedCategory !== "Todos") {
+      filtered = filtered.filter(
+        (product) => getCategoryForProduct(product.name) === selectedCategory
+      );
+    }
+
+    setFilteredProducts(filtered);
+  };
 
   const loadInitialData = async () => {
     try {
@@ -53,13 +214,19 @@ export default function HomeScreen() {
       // Load cart from storage
       const storedCart = await AsyncStorage.getItem(STORAGE_KEYS.CART);
       if (storedCart) {
-        setCart(JSON.parse(storedCart));
+        try {
+          setCart(JSON.parse(storedCart));
+        } catch (e) {
+          console.error("Error parsing cart:", e);
+          setCart({});
+        }
       }
 
       // Load products from API
       await loadProducts();
     } catch (error) {
       console.error("Error loading initial data:", error);
+      // Continuar aunque haya error
     }
   };
 
@@ -68,6 +235,7 @@ export default function HomeScreen() {
       setLoading(true);
       const data = await productsAPI.list();
       setProducts(data);
+      setFilteredProducts(data);
 
       if (data.length === 0) {
         Alert.alert(
@@ -109,92 +277,18 @@ export default function HomeScreen() {
     });
   };
 
-  const clearCart = () => {
-    Alert.alert(
-      "Limpiar carrito",
-      "¿Estás seguro de que deseas vaciar el carrito?",
-      [
-        { text: "Cancelar", style: "cancel" },
-        {
-          text: "Limpiar",
-          style: "destructive",
-          onPress: () => setCart({}),
-        },
-      ]
-    );
-  };
-
-  const handleCheckout = async () => {
-    if (!person) {
-      Alert.alert(
-        "Sin perfil",
-        "Necesitas crear un perfil en la pestaña 'Perfil' antes de realizar una compra."
-      );
-      return;
-    }
-
+  const goToCheckout = () => {
     const itemsInCart = Object.keys(cart).filter((id) => cart[id] > 0);
     if (itemsInCart.length === 0) {
       Alert.alert(
         "Carrito vacío",
-        "Agrega productos al carrito antes de finalizar la compra."
+        "Agrega productos al carrito antes de ir a compras."
       );
       return;
     }
 
-    Alert.alert(
-      "Confirmar compra",
-      `¿Deseas confirmar la compra por un total de CLP ${formatNumber(
-        calculateTotal()
-      )}?`,
-      [
-        { text: "Cancelar", style: "cancel" },
-        {
-          text: "Confirmar",
-          onPress: async () => {
-            try {
-              setLoading(true);
-
-              // Prepare purchase items
-              const items: PurchaseItem[] = products
-                .filter((p) => cart[p._id] && cart[p._id] > 0)
-                .map((p) => ({
-                  product_id: p._id,
-                  name: p.name,
-                  price: p.price,
-                  quantity: cart[p._id],
-                }));
-
-              // Create purchase
-              const purchase = await purchasesAPI.create(person._id, items);
-
-              Alert.alert(
-                "¡Compra exitosa!",
-                `Tu compra ha sido registrada.\nTotal: CLP ${formatNumber(
-                  purchase.total
-                )}\nID: ${purchase._id}`,
-                [
-                  {
-                    text: "OK",
-                    onPress: () => {
-                      setCart({}); // Clear cart after successful purchase
-                    },
-                  },
-                ]
-              );
-            } catch (error: any) {
-              Alert.alert(
-                "Error",
-                error.message ||
-                  "No se pudo procesar la compra. Intenta nuevamente."
-              );
-            } finally {
-              setLoading(false);
-            }
-          },
-        },
-      ]
-    );
+    // Navigate to Compras tab
+    router.push("/(tabs)");
   };
 
   const calculateTotal = (): number => {
@@ -202,13 +296,6 @@ export default function HomeScreen() {
       const quantity = cart[product._id] || 0;
       return acc + product.price * quantity;
     }, 0);
-  };
-
-  const formatNumber = (num: number): string => {
-    return new Intl.NumberFormat("es-CL", {
-      minimumFractionDigits: 2,
-      maximumFractionDigits: 2,
-    }).format(num);
   };
 
   const getTotalItems = (): number => {
@@ -219,138 +306,256 @@ export default function HomeScreen() {
     return (
       <SafeAreaView style={[styles.container, styles.centered]}>
         <ActivityIndicator size="large" color="#4f46e5" />
-        <Text style={styles.loadingText}>Cargando productos...</Text>
+        <Text style={styles.loadingText}>Cargando catálogo...</Text>
       </SafeAreaView>
     );
   }
 
   return (
     <SafeAreaView style={styles.container}>
-      {/* Header */}
-      <View style={styles.header}>
-        <View>
-          <Text style={styles.title}>🛒 Catálogo de Productos</Text>
-          <Text style={styles.subtitle}>
-            {person
-              ? `Comprando como ${person.name}`
-              : "Inicia sesión en Perfil"}
-          </Text>
-        </View>
-        {Object.keys(cart).length > 0 && (
-          <Pressable style={styles.clearButton} onPress={clearCart}>
-            <Text style={styles.clearButtonText}>🗑️</Text>
-          </Pressable>
-        )}
-      </View>
-
-      {/* Total Card */}
-      {Object.keys(cart).length > 0 && (
-        <View style={styles.totalCard}>
-          <View style={styles.totalRow}>
-            <Text style={styles.totalLabel}>Total:</Text>
-            <Text style={styles.total}>
-              CLP {formatNumber(calculateTotal())}
-            </Text>
-          </View>
-          <View style={styles.totalRow}>
-            <Text style={styles.itemCount}>
-              {getTotalItems()}{" "}
-              {getTotalItems() === 1 ? "producto" : "productos"}
-            </Text>
-            <Pressable
-              style={[
-                styles.checkoutButton,
-                loading && styles.checkoutButtonDisabled,
-              ]}
-              onPress={handleCheckout}
-              disabled={loading}
-            >
-              {loading ? (
-                <ActivityIndicator color="#fff" size="small" />
-              ) : (
-                <Text style={styles.checkoutButtonText}>Finalizar Compra</Text>
-              )}
-            </Pressable>
+      <ScrollView showsVerticalScrollIndicator={false}>
+        {/* Header */}
+        <View style={styles.headerGradient}>
+          <View style={styles.headerContent}>
+            <View style={styles.headerIcon}>
+              <Ionicons name="storefront" size={32} color="#fff" />
+            </View>
+            <View style={styles.headerTextContainer}>
+              <Text style={styles.title}>Catálogo de Productos</Text>
+              <Text style={styles.subtitle}>
+                Explora nuestros productos disponibles
+              </Text>
+            </View>
           </View>
         </View>
-      )}
 
-      {/* Products List */}
-      <FlatList
-        data={products}
-        keyExtractor={(item) => item._id}
-        contentContainerStyle={styles.listContent}
-        refreshControl={
-          <RefreshControl
-            refreshing={refreshing}
-            onRefresh={onRefresh}
-            colors={["#4f46e5"]}
-          />
-        }
-        ListEmptyComponent={
-          <View style={styles.emptyState}>
-            <Text style={styles.emptyIcon}>📦</Text>
-            <Text style={styles.emptyText}>No hay productos disponibles</Text>
-            <Text style={styles.emptySubtext}>
-              El catálogo está vacío. Contacta al administrador.
-            </Text>
-            <Pressable style={styles.retryButton} onPress={onRefresh}>
-              <Text style={styles.retryButtonText}>🔄 Reintentar</Text>
-            </Pressable>
+        <View style={styles.contentWrapper}>
+          {/* Search Bar */}
+          <View style={styles.searchContainer}>
+            <Ionicons
+              name="search"
+              size={20}
+              color="#9ca3af"
+              style={styles.searchIcon}
+            />
+            <TextInput
+              placeholder="Buscar productos..."
+              value={searchQuery}
+              onChangeText={setSearchQuery}
+              style={styles.searchInput}
+              placeholderTextColor="#9ca3af"
+            />
           </View>
-        }
-        renderItem={({ item }) => {
-          const quantity = cart[item._id] || 0;
-          const inCart = quantity > 0;
 
-          return (
-            <View
-              style={[styles.productCard, inCart && styles.productCardSelected]}
-            >
-              <View style={styles.productInfo}>
-                <Text style={styles.productName}>{item.name}</Text>
-                <Text style={styles.productPrice}>
-                  CLP {formatNumber(item.price)}
+          {/* Category Filters */}
+          <ScrollView
+            horizontal
+            showsHorizontalScrollIndicator={false}
+            style={styles.categoriesContainer}
+            contentContainerStyle={styles.categoriesContent}
+          >
+            {categories.map((category) => (
+              <Pressable
+                key={category}
+                style={({ pressed }) => [
+                  styles.categoryChip,
+                  selectedCategory === category && styles.categoryChipActive,
+                  pressed && styles.categoryChipPressed,
+                ]}
+                onPress={() => setSelectedCategory(category)}
+              >
+                <Text
+                  style={[
+                    styles.categoryChipText,
+                    selectedCategory === category &&
+                      styles.categoryChipTextActive,
+                  ]}
+                >
+                  {category}
                 </Text>
-                {inCart && (
-                  <Text style={styles.productSubtotal}>
-                    Subtotal: CLP {formatNumber(item.price * quantity)}
-                  </Text>
-                )}
-              </View>
+              </Pressable>
+            ))}
+          </ScrollView>
 
-              <View style={styles.quantityControls}>
-                {inCart ? (
-                  <>
-                    <Pressable
-                      style={styles.quantityButton}
-                      onPress={() => updateQuantity(item._id, -1)}
-                    >
-                      <Text style={styles.quantityButtonText}>−</Text>
-                    </Pressable>
-                    <View style={styles.quantityDisplay}>
-                      <Text style={styles.quantityText}>{quantity}</Text>
+          {/* Products Grid */}
+          {loading && products.length === 0 ? (
+            <View style={styles.loadingContainer}>
+              <ActivityIndicator size="large" color="#6366f1" />
+              <Text style={styles.loadingText}>Cargando productos...</Text>
+            </View>
+          ) : filteredProducts.length === 0 ? (
+            <View style={styles.emptyState}>
+              <View style={styles.emptyIcon}>
+                <Ionicons name="cube-outline" size={80} color="#cbd5e1" />
+              </View>
+              <Text style={styles.emptyText}>No se encontraron productos</Text>
+              <Text style={styles.emptySubtext}>
+                Intenta con otra búsqueda o categoría
+              </Text>
+              <Pressable
+                style={({ pressed }) => [
+                  styles.retryButton,
+                  pressed && styles.retryButtonPressed,
+                ]}
+                onPress={() => {
+                  setSearchQuery("");
+                  setSelectedCategory("Todos");
+                }}
+              >
+                <Ionicons name="refresh" size={20} color="#fff" />
+                <Text style={styles.retryButtonText}>Ver todos</Text>
+              </Pressable>
+            </View>
+          ) : (
+            <View style={styles.productsGrid}>
+              {filteredProducts.map((item, index) => (
+                <View key={item._id} style={styles.productCardWrapper}>
+                  <ProductCard item={item} index={index} />
+                  <Pressable
+                    style={({ pressed }) => [
+                      styles.detailsButton,
+                      pressed && styles.detailsButtonPressed,
+                    ]}
+                    onPress={() => {
+                      setSelectedProduct(item);
+                      setShowDetailModal(true);
+                    }}
+                  >
+                    <Ionicons
+                      name="information-circle"
+                      size={16}
+                      color="#fff"
+                    />
+                    <Text style={styles.detailsButtonText}>Ver detalles</Text>
+                  </Pressable>
+                </View>
+              ))}
+            </View>
+          )}
+        </View>
+      </ScrollView>
+
+      {/* Modal de Detalle del Producto */}
+      <Modal
+        visible={showDetailModal}
+        animationType="slide"
+        transparent={true}
+        onRequestClose={() => setShowDetailModal(false)}
+      >
+        <View style={styles.modalOverlay}>
+          <View style={styles.modalContent}>
+            <ScrollView showsVerticalScrollIndicator={false}>
+              {selectedProduct && (
+                <>
+                  {/* Header del Modal */}
+                  <View style={styles.modalHeader}>
+                    <View style={styles.modalProductIcon}>
+                      <Text style={styles.modalProductEmoji}>
+                        {getProductEmoji(selectedProduct.name)}
+                      </Text>
                     </View>
                     <Pressable
-                      style={styles.quantityButton}
-                      onPress={() => updateQuantity(item._id, 1)}
+                      style={styles.closeButton}
+                      onPress={() => setShowDetailModal(false)}
                     >
-                      <Text style={styles.quantityButtonText}>+</Text>
+                      <Ionicons name="close-circle" size={32} color="#64748b" />
                     </Pressable>
-                  </>
-                ) : (
+                  </View>
+
+                  {/* Información Principal */}
+                  <View style={styles.modalBody}>
+                    <Text style={styles.modalProductName}>
+                      {selectedProduct.name}
+                    </Text>
+                    <Text style={styles.modalProductPrice}>
+                      {getCurrencySymbol()} {formatPrice(selectedProduct.price)}
+                    </Text>
+                    {selectedProduct.category && (
+                      <View style={styles.modalCategoryBadge}>
+                        <Ionicons name="pricetag" size={14} color="#6366f1" />
+                        <Text style={styles.modalCategoryText}>
+                          {selectedProduct.category}
+                        </Text>
+                      </View>
+                    )}
+
+                    {/* Descripción */}
+                    {selectedProduct.description && (
+                      <View style={styles.modalSection}>
+                        <View style={styles.modalSectionHeader}>
+                          <Ionicons
+                            name="document-text"
+                            size={20}
+                            color="#6366f1"
+                          />
+                          <Text style={styles.modalSectionTitle}>
+                            Descripción
+                          </Text>
+                        </View>
+                        <Text style={styles.modalDescription}>
+                          {selectedProduct.description}
+                        </Text>
+                      </View>
+                    )}
+
+                    {/* Características */}
+                    {selectedProduct.characteristics &&
+                      selectedProduct.characteristics.length > 0 && (
+                        <View style={styles.modalSection}>
+                          <View style={styles.modalSectionHeader}>
+                            <Ionicons
+                              name="checkmark-circle"
+                              size={20}
+                              color="#10b981"
+                            />
+                            <Text style={styles.modalSectionTitle}>
+                              Características
+                            </Text>
+                          </View>
+                          <View style={styles.characteristicsList}>
+                            {selectedProduct.characteristics.map(
+                              (char, index) => (
+                                <View
+                                  key={index}
+                                  style={styles.characteristicItem}
+                                >
+                                  <Ionicons
+                                    name="checkmark"
+                                    size={16}
+                                    color="#10b981"
+                                  />
+                                  <Text style={styles.characteristicText}>
+                                    {char}
+                                  </Text>
+                                </View>
+                              )
+                            )}
+                          </View>
+                        </View>
+                      )}
+                  </View>
+
+                  {/* Botón de Agregar al Carrito */}
                   <Pressable
-                    style={styles.addButton}
-                    onPress={() => updateQuantity(item._id, 1)}
+                    style={({ pressed }) => [
+                      styles.modalAddButton,
+                      pressed && styles.modalAddButtonPressed,
+                    ]}
+                    onPress={() => {
+                      setShowDetailModal(false);
+                      // Aquí puedes agregar la lógica para ir a la pantalla de compras
+                      router.push("/(tabs)");
+                    }}
                   >
-                    <Text style={styles.addButtonText}>Agregar</Text>
+                    <Ionicons name="cart" size={20} color="#fff" />
+                    <Text style={styles.modalAddButtonText}>Ir a Compras</Text>
                   </Pressable>
-                )}
-              </View>
-            </View>
-          );
-        }}
-      />
+                </>
+              )}
+            </ScrollView>
+          </View>
+        </View>
+      </Modal>
     </SafeAreaView>
   );
 }
@@ -358,7 +563,7 @@ export default function HomeScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#f5f7fa",
+    backgroundColor: "#f8fafc",
   },
   centered: {
     justifyContent: "center",
@@ -367,198 +572,425 @@ const styles = StyleSheet.create({
   loadingText: {
     marginTop: 12,
     fontSize: 16,
-    color: "#6b7280",
+    color: "#64748b",
+    fontWeight: "600",
   },
-  header: {
-    backgroundColor: "#4f46e5",
-    paddingHorizontal: 20,
-    paddingTop: 20,
-    paddingBottom: 24,
-    borderBottomLeftRadius: 24,
-    borderBottomRightRadius: 24,
+  headerGradient: {
+    backgroundColor: "#6366f1",
+    paddingTop: 60,
+    paddingBottom: 32,
+    paddingHorizontal: 24,
+    marginBottom: 24,
+  },
+  headerContent: {
     flexDirection: "row",
-    justifyContent: "space-between",
     alignItems: "center",
+    gap: 16,
+  },
+  headerIcon: {
+    width: 56,
+    height: 56,
+    borderRadius: 28,
+    backgroundColor: "rgba(255, 255, 255, 0.2)",
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  headerTextContainer: {
+    flex: 1,
   },
   title: {
-    fontSize: 24,
+    fontSize: 32,
     fontWeight: "700",
     color: "#fff",
     marginBottom: 4,
   },
   subtitle: {
-    fontSize: 13,
-    color: "#e0e7ff",
-  },
-  clearButton: {
-    backgroundColor: "#ef4444",
-    width: 44,
-    height: 44,
-    borderRadius: 22,
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  clearButtonText: {
-    fontSize: 20,
-  },
-  totalCard: {
-    backgroundColor: "#fff",
-    marginHorizontal: 16,
-    marginTop: 16,
-    marginBottom: 8,
-    padding: 16,
-    borderRadius: 16,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 8,
-    elevation: 3,
-  },
-  totalRow: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    marginBottom: 8,
-  },
-  totalLabel: {
-    fontSize: 16,
-    color: "#6b7280",
+    fontSize: 14,
+    color: "rgba(255, 255, 255, 0.9)",
     fontWeight: "500",
   },
-  total: {
-    fontSize: 24,
-    fontWeight: "700",
-    color: "#4f46e5",
+  contentWrapper: {
+    padding: 16,
   },
-  itemCount: {
-    fontSize: 13,
-    color: "#9ca3af",
+  searchContainer: {
+    position: "relative",
+    marginBottom: 16,
   },
-  checkoutButton: {
-    backgroundColor: "#10b981",
+  searchIcon: {
+    position: "absolute",
+    left: 16,
+    top: 14,
+    zIndex: 1,
+  },
+  searchInput: {
+    backgroundColor: "#fff",
+    borderRadius: 12,
+    paddingLeft: 48,
+    paddingRight: 16,
+    paddingVertical: 12,
+    fontSize: 15,
+    color: "#1e293b",
+    borderWidth: 1,
+    borderColor: "#e2e8f0",
+    boxShadow: "0px 2px 6px rgba(0, 0, 0, 0.05)",
+  },
+  categoriesContainer: {
+    marginBottom: 20,
+  },
+  categoriesContent: {
+    gap: 8,
+    paddingRight: 16,
+  },
+  categoryChip: {
     paddingHorizontal: 20,
     paddingVertical: 10,
-    borderRadius: 12,
+    borderRadius: 20,
+    backgroundColor: "#fff",
+    borderWidth: 2,
+    borderColor: "#e2e8f0",
   },
-  checkoutButtonDisabled: {
-    backgroundColor: "#9ca3af",
+  categoryChipActive: {
+    backgroundColor: "#1e293b",
+    borderColor: "#1e293b",
   },
-  checkoutButtonText: {
-    color: "#fff",
+  categoryChipPressed: {
+    opacity: 0.7,
+    transform: [{ scale: 0.98 }],
+  },
+  categoryChipText: {
     fontSize: 14,
     fontWeight: "600",
+    color: "#64748b",
   },
-  listContent: {
-    paddingHorizontal: 16,
-    paddingTop: 8,
-    paddingBottom: 20,
+  categoryChipTextActive: {
+    color: "#fff",
+  },
+  productsGrid: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+    justifyContent: "space-between",
+  },
+  productCardWrapper: {
+    width: "48%",
+    marginBottom: 16,
   },
   productCard: {
     backgroundColor: "#fff",
-    padding: 16,
-    borderRadius: 12,
-    marginBottom: 10,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.05,
-    shadowRadius: 4,
-    elevation: 2,
+    borderRadius: 16,
+    padding: 12,
+    boxShadow: "0px 4px 12px rgba(0, 0, 0, 0.08)",
+    minHeight: 120,
     flexDirection: "row",
-    justifyContent: "space-between",
     alignItems: "center",
   },
-  productCardSelected: {
-    borderWidth: 2,
-    borderColor: "#4f46e5",
+  productEmojiContainer: {
+    marginRight: 12,
+    width: 44,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  productEmoji: {
+    fontSize: 36,
   },
   productInfo: {
     flex: 1,
-    marginRight: 12,
+    justifyContent: "center",
   },
   productName: {
-    fontSize: 16,
-    fontWeight: "600",
-    color: "#1f2937",
+    fontSize: 15,
+    fontWeight: "700",
+    color: "#1e293b",
     marginBottom: 4,
   },
-  productPrice: {
-    fontSize: 14,
-    color: "#6b7280",
-    marginBottom: 2,
+  productDescription: {
+    fontSize: 11,
+    color: "#64748b",
+    marginBottom: 8,
+    lineHeight: 14,
   },
-  productSubtotal: {
+  priceTag: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 6,
+    backgroundColor: "#f1f5f9",
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+    borderRadius: 8,
+    alignSelf: "flex-start",
+  },
+  productPrice: {
     fontSize: 13,
-    color: "#4f46e5",
-    fontWeight: "600",
+    fontWeight: "700",
+    color: "#6366f1",
+    fontFamily: "Courier New",
   },
   quantityControls: {
     flexDirection: "row",
     alignItems: "center",
+    justifyContent: "space-between",
+    backgroundColor: "#f8fafc",
+    borderRadius: 12,
+    padding: 6,
   },
   quantityButton: {
-    width: 36,
-    height: 36,
-    borderRadius: 18,
-    backgroundColor: "#4f46e5",
+    width: 32,
+    height: 32,
+    borderRadius: 16,
+    backgroundColor: "#6366f1",
     alignItems: "center",
     justifyContent: "center",
   },
   quantityButtonText: {
     color: "#fff",
-    fontSize: 20,
-    fontWeight: "600",
-  },
-  quantityDisplay: {
-    minWidth: 40,
-    paddingHorizontal: 12,
-    alignItems: "center",
-  },
-  quantityText: {
     fontSize: 18,
     fontWeight: "700",
-    color: "#1f2937",
+  },
+  quantityText: {
+    fontSize: 16,
+    fontWeight: "700",
+    color: "#1e293b",
+    fontFamily: "Courier New",
   },
   addButton: {
     backgroundColor: "#10b981",
-    paddingHorizontal: 16,
-    paddingVertical: 10,
+    paddingVertical: 12,
     borderRadius: 12,
+    alignItems: "center",
   },
   addButtonText: {
     color: "#fff",
     fontSize: 14,
+    fontWeight: "700",
+  },
+  floatingCart: {
+    position: "absolute",
+    bottom: 24,
+    left: 16,
+    right: 16,
+    zIndex: 1000,
+  },
+  cartButton: {
+    backgroundColor: "#6366f1",
+    borderRadius: 20,
+    boxShadow: "0px 8px 24px rgba(99, 102, 241, 0.3)",
+  },
+  cartButtonContent: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    padding: 24,
+  },
+  cartButtonTitle: {
+    color: "#fff",
+    fontSize: 18,
+    fontWeight: "700",
+    marginBottom: 4,
+  },
+  cartButtonSubtitle: {
+    color: "rgba(255, 255, 255, 0.9)",
+    fontSize: 14,
     fontWeight: "600",
+    fontFamily: "Courier New",
+  },
+  cartButtonIcon: {
+    backgroundColor: "rgba(255, 255, 255, 0.2)",
+    paddingHorizontal: 20,
+    paddingVertical: 12,
+    borderRadius: 16,
+  },
+  cartButtonIconText: {
+    color: "#fff",
+    fontSize: 16,
+    fontWeight: "700",
   },
   emptyState: {
     alignItems: "center",
     justifyContent: "center",
-    paddingVertical: 80,
+    paddingVertical: 100,
+    paddingHorizontal: 32,
   },
   emptyIcon: {
-    fontSize: 64,
-    marginBottom: 16,
+    marginBottom: 24,
   },
   emptyText: {
-    fontSize: 18,
-    fontWeight: "600",
-    color: "#6b7280",
+    fontSize: 20,
+    fontWeight: "700",
+    color: "#64748b",
     marginBottom: 8,
+    textAlign: "center",
   },
   emptySubtext: {
     fontSize: 14,
-    color: "#9ca3af",
+    color: "#94a3b8",
     textAlign: "center",
-    marginBottom: 24,
+    marginBottom: 32,
+    lineHeight: 20,
+  },
+  loadingContainer: {
+    alignItems: "center",
+    paddingVertical: 60,
+  },
+  detailsButton: {
+    backgroundColor: "#1e293b",
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    gap: 6,
+    paddingVertical: 10,
+    paddingHorizontal: 12,
+    borderRadius: 12,
+    marginTop: 8,
+  },
+  detailsButtonPressed: {
+    backgroundColor: "#0f172a",
+    transform: [{ scale: 0.98 }],
+  },
+  detailsButtonText: {
+    color: "#fff",
+    fontSize: 13,
+    fontWeight: "700",
   },
   retryButton: {
-    backgroundColor: "#4f46e5",
+    backgroundColor: "#6366f1",
     paddingHorizontal: 24,
-    paddingVertical: 12,
-    borderRadius: 12,
+    paddingVertical: 14,
+    borderRadius: 16,
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 8,
+  },
+  retryButtonPressed: {
+    backgroundColor: "#4f46e5",
+    transform: [{ scale: 0.98 }],
   },
   retryButtonText: {
     color: "#fff",
+    fontSize: 15,
+    fontWeight: "700",
+  },
+  // Modal Styles
+  modalOverlay: {
+    flex: 1,
+    backgroundColor: "rgba(0, 0, 0, 0.5)",
+    justifyContent: "flex-end",
+  },
+  modalContent: {
+    backgroundColor: "#fff",
+    borderTopLeftRadius: 24,
+    borderTopRightRadius: 24,
+    maxHeight: "90%",
+    paddingBottom: 40,
+  },
+  modalHeader: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    padding: 20,
+    borderBottomWidth: 1,
+    borderBottomColor: "#f1f5f9",
+  },
+  modalProductIcon: {
+    width: 64,
+    height: 64,
+    borderRadius: 16,
+    backgroundColor: "#f8fafc",
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  modalProductEmoji: {
+    fontSize: 36,
+  },
+  closeButton: {
+    padding: 4,
+  },
+  modalBody: {
+    padding: 20,
+  },
+  modalProductName: {
+    fontSize: 24,
+    fontWeight: "700",
+    color: "#1e293b",
+    marginBottom: 8,
+  },
+  modalProductPrice: {
+    fontSize: 28,
+    fontWeight: "700",
+    color: "#6366f1",
+    fontFamily: "Courier New",
+    marginBottom: 12,
+  },
+  modalCategoryBadge: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 6,
+    backgroundColor: "#eff6ff",
+    paddingVertical: 6,
+    paddingHorizontal: 12,
+    borderRadius: 12,
+    alignSelf: "flex-start",
+    marginBottom: 24,
+  },
+  modalCategoryText: {
     fontSize: 14,
     fontWeight: "600",
+    color: "#6366f1",
+  },
+  modalSection: {
+    marginBottom: 24,
+  },
+  modalSectionHeader: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 8,
+    marginBottom: 12,
+  },
+  modalSectionTitle: {
+    fontSize: 18,
+    fontWeight: "700",
+    color: "#1e293b",
+  },
+  modalDescription: {
+    fontSize: 15,
+    color: "#64748b",
+    lineHeight: 22,
+  },
+  characteristicsList: {
+    gap: 8,
+  },
+  characteristicItem: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 8,
+    backgroundColor: "#f8fafc",
+    padding: 12,
+    borderRadius: 12,
+    borderLeftWidth: 3,
+    borderLeftColor: "#10b981",
+  },
+  characteristicText: {
+    fontSize: 14,
+    color: "#475569",
+    flex: 1,
+  },
+  modalAddButton: {
+    backgroundColor: "#6366f1",
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    gap: 10,
+    paddingVertical: 16,
+    marginHorizontal: 20,
+    borderRadius: 16,
+    marginTop: 8,
+    boxShadow: "0px 8px 24px rgba(99, 102, 241, 0.4)",
+  },
+  modalAddButtonPressed: {
+    backgroundColor: "#4f46e5",
+    transform: [{ scale: 0.98 }],
+  },
+  modalAddButtonText: {
+    color: "#fff",
+    fontSize: 16,
+    fontWeight: "700",
   },
 });

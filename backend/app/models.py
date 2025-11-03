@@ -82,6 +82,9 @@ class ProductIn(BaseModel):
     """Product creation input"""
     name: str
     price: float
+    description: Optional[str] = ""
+    category: Optional[str] = "Otros"
+    characteristics: Optional[list[str]] = []
 
     @field_validator("price")
     @classmethod
@@ -96,6 +99,9 @@ class ProductOut(BaseModel):
     id: Optional[PyObjectId] = Field(default=None, alias="_id")
     name: str
     price: float
+    description: Optional[str] = ""
+    category: Optional[str] = "Otros"
+    characteristics: Optional[list[str]] = []
 
     model_config = ConfigDict(
         populate_by_name=True,

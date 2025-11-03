@@ -1,5 +1,5 @@
 import axios, { AxiosError } from "axios";
-import { API_CONFIG } from "./config";
+import { API_CONFIG } from "../config";
 
 // Create axios instance with default config
 const api = axios.create({
@@ -43,6 +43,9 @@ export interface Product {
   _id: string;
   name: string;
   price: number;
+  description?: string;
+  category?: string;
+  characteristics?: string[];
 }
 
 export interface PurchaseItem {

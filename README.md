@@ -12,12 +12,12 @@ Una aplicación móvil completa de compras con backend FastAPI y MongoDB Atlas, 
 
 ## 🚀 Inicio Rápido
 
-| Acción                     | Enlace                                | Tiempo |
-| -------------------------- | ------------------------------------- | ------ |
-| ⚡ Comenzar ahora          | [QUICK_START.md](docs/QUICK_START.md) | 15 min |
-| 📚 Ver documentación       | [Índice de Docs](docs/README.md)      | -      |
+| Acción                      | Enlace                             | Tiempo |
+| ---------------------------- | ---------------------------------- | ------ |
+| ⚡ Comenzar ahora            | [QUICK_START.md](docs/QUICK_START.md) | 15 min |
+| 📚 Ver documentación        | [Índice de Docs](docs/README.md)     | -      |
 | 🏗️ Estructura del proyecto | [STRUCTURE.md](docs/STRUCTURE.md)     | -      |
-| 🔌 Referencia de API       | [API_DOCS.md](docs/API_DOCS.md)       | -      |
+| 🔌 Referencia de API         | [API_DOCS.md](docs/API_DOCS.md)       | -      |
 
 ---
 
@@ -164,12 +164,12 @@ npx expo start
 
 **8 endpoints REST** organizados en 4 categorías:
 
-| Categoría    | Endpoints                                                              | Documentación                                     |
-| ------------ | ---------------------------------------------------------------------- | ------------------------------------------------- |
-| 🔐 Auth      | `POST /auth/register`, `POST /auth/login`                              | [Ver detalles](./docs/API_DOCS.md#-autenticación) |
-| 👤 Persons   | `POST /persons`, `GET /persons/{id}`, `GET /persons`                   | [Ver detalles](./docs/API_DOCS.md#-personas)      |
-| 📦 Products  | `GET /products`, `GET /products/{id}`, `POST /products`                | [Ver detalles](./docs/API_DOCS.md#-productos)     |
-| 🛒 Purchases | `POST /purchases`, `GET /purchases/{id}`, `GET /purchases/person/{id}` | [Ver detalles](./docs/API_DOCS.md#-compras)       |
+| Categoría   | Endpoints                                                                    | Documentación                                  |
+| ------------ | ---------------------------------------------------------------------------- | ----------------------------------------------- |
+| 🔐 Auth      | `POST /auth/register`, `POST /auth/login`                                | [Ver detalles](./docs/API_DOCS.md#-autenticación) |
+| 👤 Persons   | `POST /persons`, `GET /persons/{id}`, `GET /persons`                   | [Ver detalles](./docs/API_DOCS.md#-personas)       |
+| 📦 Products  | `GET /products`, `GET /products/{id}`, `POST /products`                | [Ver detalles](./docs/API_DOCS.md#-productos)      |
+| 🛒 Purchases | `POST /purchases`, `GET /purchases/{id}`, `GET /purchases/person/{id}` | [Ver detalles](./docs/API_DOCS.md#-compras)        |
 
 📖 **Documentación completa**:
 
@@ -302,13 +302,13 @@ En producción, deberías:
 
 ### Problemas Comunes
 
-| Problema                     | Solución Rápida                         | Documentación                                          |
-| ---------------------------- | --------------------------------------- | ------------------------------------------------------ |
+| Problema                     | Solución Rápida                         | Documentación                                        |
+| ---------------------------- | ----------------------------------------- | ----------------------------------------------------- |
 | Backend no conecta a MongoDB | Verifica `.env` y whitelist de IP       | [Ver detalles](./docs/INSTALL.md#⚠️-problemas-comunes) |
-| App no conecta al backend    | Usa `http://10.0.2.2:8000` para Android | [Ver guía](./docs/QUICK_START.md#-obtener-tu-ip-local) |
-| No aparecen productos        | Ejecuta `python seed_products.py`       | [Ver comandos](./docs/COMMANDS.md#-backend-fastapi)    |
-| Error de módulos Python      | `pip install -r requirements.txt`       | [Ver instalación](./docs/INSTALL.md#-backend-python)   |
-| Error de módulos Node        | `npm install` o borrar `node_modules`   | [Ver instalación](./docs/INSTALL.md#-frontend-nodejs)  |
+| App no conecta al backend    | Usa `http://10.0.2.2:8000` para Android | [Ver guía](./docs/QUICK_START.md#-obtener-tu-ip-local)  |
+| No aparecen productos        | Ejecuta `python seed_products.py`       | [Ver comandos](./docs/COMMANDS.md#-backend-fastapi)      |
+| Error de módulos Python     | `pip install -r requirements.txt`       | [Ver instalación](./docs/INSTALL.md#-backend-python)    |
+| Error de módulos Node       | `npm install` o borrar `node_modules` | [Ver instalación](./docs/INSTALL.md#-frontend-nodejs)   |
 
 📖 **Más ayuda**: [Guía completa de troubleshooting](./docs/INSTALL.md#⚠️-problemas-comunes)
 
@@ -316,16 +316,16 @@ En producción, deberías:
 
 ### Guías Disponibles
 
-| Documento                                     | Descripción                       | Tiempo |
-| --------------------------------------------- | --------------------------------- | ------ |
-| [🚀 Quick Start](./docs/QUICK_START.md)       | Inicio rápido del proyecto        | 15 min |
-| [📦 Instalación](./docs/INSTALL.md)           | Guía de instalación detallada     | -      |
-| [📡 API Docs](./docs/API_DOCS.md)             | Referencia completa de endpoints  | -      |
-| [🛠️ Comandos](./docs/COMMANDS.md)             | Comandos útiles para desarrollo   | -      |
-| [📁 Estructura](./docs/STRUCTURE.md)          | Estructura detallada del proyecto | -      |
-| [✅ Implementación](./docs/IMPLEMENTATION.md) | Resumen técnico del proyecto      | -      |
-| [📱 Frontend README](./frontend/README.md)    | Documentación del frontend        | -      |
-| [⚡ Backend README](./backend/README.md)      | Documentación del backend         | -      |
+| Documento                                   | Descripción                      | Tiempo |
+| ------------------------------------------- | --------------------------------- | ------ |
+| [🚀 Quick Start](./docs/QUICK_START.md)        | Inicio rápido del proyecto       | 15 min |
+| [📦 Instalación](./docs/INSTALL.md)           | Guía de instalación detallada   | -      |
+| [📡 API Docs](./docs/API_DOCS.md)              | Referencia completa de endpoints  | -      |
+| [🛠️ Comandos](./docs/COMMANDS.md)            | Comandos útiles para desarrollo  | -      |
+| [📁 Estructura](./docs/STRUCTURE.md)           | Estructura detallada del proyecto | -      |
+| [✅ Implementación](./docs/IMPLEMENTATION.md) | Resumen técnico del proyecto     | -      |
+| [📱 Frontend README](./frontend/README.md)     | Documentación del frontend       | -      |
+| [⚡ Backend README](./backend/README.md)       | Documentación del backend        | -      |
 
 📖 **Índice completo**: [docs/README.md](./docs/README.md)
 
