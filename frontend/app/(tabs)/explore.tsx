@@ -351,10 +351,12 @@ export default function TabTwoScreen() {
                   ]}
                   onPress={() => setCurrency(curr)}
                 >
-                  <View style={[
-                    styles.currencyIconContainer,
-                    currency === curr && styles.currencyIconContainerActive
-                  ]}>
+                  <View
+                    style={[
+                      styles.currencyIconContainer,
+                      currency === curr && styles.currencyIconContainerActive,
+                    ]}
+                  >
                     <Ionicons
                       name={
                         curr === "CLP"
